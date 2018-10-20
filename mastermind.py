@@ -77,14 +77,32 @@ def generate_sequence():
     for i in range(4):
         seq[i] = random.choice(colour_array)
 
+def check_pegs(colours):
+    black = 0
+    white = 0
+    bool1 = ['f', 'f', 'f', 'f']
+    bool2 = ['f', 'f', 'f', 'f']
+    for i in range(4):
+        if colours[i] == seq[i]:
+            black += 1
+            bool1[i] = 't'
+            bool2[i] = 't'
+    for i in range(4):
+        if bool1[i] == 't':
+            continue
+        for j in range(4):
+            if i == j or bool2[j] == 't' or seq[i]!=colours[j]:
+                continue
+            white += 1
+            break
+    return [black, white]
+
 #set up colour buttons
 mm = tk.Tk()
 mm.title("Master Mind")
-mm.geometry("324x720")
+mm.geometry("334x720")
 mm.resizable(0, 0)
-##### CHANGE THIS TO NOT A circle
-#### MAKE IT pegs, for accurate dimensions; black peg side = 0
-b0 = EnterButton(mm)
+b0 = PegBoard(mm, 'black', 0)
 b0.grid(row=13,column=0)
 b1 = CustomButton(mm)
 b1.grid(row=13,column=1)
@@ -106,25 +124,20 @@ while(tries>0):
         colours = [b1.colour, b2.colour, b3.colour, b4.colour]
         for i in range(4):
             bx = CustomCircle(mm, colours[i])
-            bx.grid(row=tries,column=i+1)
-        tries -= 1
+            bx.grid(row=12-tries, column=i+1)
         enter.press = 'false'
-        pbw = PegBoard(mm, 'white', 2)
-        pbb = PegBoard(mm, 'black', 3)
-        pbw.grid(row=tries, column=5)
-        pbb.grid(row=tries, column=0)
-
-
-
-# to implement:
-# white and black circles... two more classes [::] <- like
-# logic for finding out how many ^ very easy
-# instructions!
-
-
-
-
-
-
-
-#personal space
+        bw = check_pegs(colours)
+        if bw[0] == 4:
+            print("Congratulations! You found the sequence")
+            #restart
+        pbw = PegBoard(mm, 'white', bw[1])
+        pbb = PegBoard(mm, 'black', bw[0])
+        pbw.grid(row=12-tries, column=5)
+        pbb.grid(row=12-tries, column=0)
+        tries -= 1
+        if tries == 0:
+            print("Sorry, you lost")
+            for i in range(4):
+                answ = CustomCircle(mm, seq[i])
+                answ.grid(row=0, column=i+1)
+            mm.mainloop()
