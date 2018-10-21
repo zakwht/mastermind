@@ -1,6 +1,7 @@
 from Tkinter import *
 import Tkinter as tk
 import random
+import webbrowser
 
 colour_array = ['PaleVioletRed1', 'aquamarine2', 'peach puff', 'DarkOliveGreen2', 'SlateBlue2']
 seq = ['white', 'white', 'white', 'white']
@@ -139,7 +140,7 @@ def instructions():
     T = Text(pop, height=9, width=50, bd=0, wrap=tk.WORD)
     T.pack(side=LEFT, fill=Y)
     s = "How To Play\n"
-    s += "A random code of 5 colours is generated. You have twelve tries to"
+    s += "A random code of 5 colours is generated. You have twelve tries to "
     s += "crack the code. Each turn, use the buttons to choose the colour "
     s += "combination you want to guess. For each colour in the right spot, "
     s += "you will receive a black peg (left side). For any other colour "
@@ -148,11 +149,17 @@ def instructions():
     T.insert(END, s)
     T.config(state=DISABLED)
 
-def set_destroy():
+# About Menu Options
+def about_menu():
+    webbrowser.open('https://github.com/zakwht/mastermind')
+
+# Set the Destroy Flag
+def set_destroy(self=None):
     global destroy
     destroy = True
 
-def set_kill():
+# Set the Kill Flag
+def set_kill(self=None):
     global kill
     kill = True
 
@@ -161,7 +168,7 @@ def set_colour(colour):
     global colour_array
     halloween = ['gray4', 'DarkOrange1', 'yellow', 'orange4', 'ghost white']
     default = ['PaleVioletRed1', 'aquamarine2', 'peach puff', 'DarkOliveGreen2', 'SlateBlue2']
-    bluegreen = ['SeaGreen1', 'dodger blue', 'spring green', 'aquamarine', 'steel blue']
+    bluegreen = ['lime green', 'dodger blue', 'spring green', 'aquamarine', 'steel blue']
     grey = ['gray90', 'gray60', 'gray30', 'gray20', 'gray5']
     themes = [default, grey, bluegreen, halloween]
     colour_array = themes[colour]
@@ -239,7 +246,7 @@ def play():
     #########################
     mm = tk.Tk()
     mm.title("Master Mind")
-    mm.geometry("334x720")
+    mm.geometry("334x718")
     mm.resizable(0, 0)
     mm.protocol("WM_DELETE_WINDOW", set_kill)
     b0 = PegBoard(mm, 'black', 0)
@@ -263,20 +270,21 @@ def play():
     menu = Menu(menubar, tearoff=0)
     menu.add_command(label="Colours", command=colour_menu)
     menu.add_command(label="Difficulty", command=difficulty_menu)
-    menu.add_command(label="Restart", command=set_destroy)
+    menu.add_command(label="Restart", command=set_destroy, underline=1, accelerator="Ctrl+R")
     menu.add_separator()
     menu.add_command(label="Instructions", command=instructions)
-    menu.add_command(label="About", command=colour_menu)
+    menu.add_command(label="About", command=about_menu)
     menu.add_separator()
-    menu.add_command(label="Exit", command=mm.quit())
+    menu.add_command(label="Exit", command=set_kill, accelerator="Ctrl+Q")
     menubar.add_cascade(label="Master Mind", menu=menu)
     mm.config(menu=menubar)
+    mm.bind_all("<Control-q>", set_kill)
+    mm.bind_all("<Control-r>", set_destroy)
 
     ##########################
     # Begin Playing The Game #
     ##########################
     generate_sequence()
-    print(seq)
     global diff
     tries = 8 if diff==2 else 12
     while tries>0:
