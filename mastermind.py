@@ -3,10 +3,10 @@ import Tkinter as tk
 import random
 import webbrowser
 
-colour_array = ['PaleVioletRed1', 'aquamarine2', 'peach puff', 'DarkOliveGreen2', 'SlateBlue2']
+colour_array = ['PaleVioletRed1', 'aquamarine2', 'peach puff', 'DarkOliveGreen2', 'SlateBlue2', 'orange']
 seq = ['white', 'white', 'white', 'white']
 theme = 0       #colour theme
-diff = 1        #difficulty [easy, standard, hard]
+diff = 2        #difficulty [beginner, easy, standard, hard]
 destroy = False #flag to close popup & restart game
 kill = False    #flag to close all windows & exit
 
@@ -119,9 +119,10 @@ def difficulty_menu():
     v.set(diff)
 
     tk.Label(pop, text="Select Colour Theme:").pack()
-    tk.Radiobutton(pop, text="Easy", padx = 10, variable=v, value=0).pack(anchor=tk.W)
-    tk.Radiobutton(pop, text="Standard", padx = 10, variable=v, value=1).pack(anchor=tk.W)
-    tk.Radiobutton(pop, text="Hard", padx = 10, variable=v, value=2).pack(anchor=tk.W)
+    tk.Radiobutton(pop, text="Beginner", padx = 10, variable=v, value=0).pack(anchor=tk.W)
+    tk.Radiobutton(pop, text="Easy", padx = 10, variable=v, value=1).pack(anchor=tk.W)
+    tk.Radiobutton(pop, text="Standard", padx = 10, variable=v, value=2).pack(anchor=tk.W)
+    tk.Radiobutton(pop, text="Hard", padx = 10, variable=v, value=3).pack(anchor=tk.W)
     pop.resizable(0, 0)
 
     global destroy
@@ -140,7 +141,7 @@ def instructions():
     T = Text(pop, height=9, width=50, bd=0, wrap=tk.WORD)
     T.pack(side=LEFT, fill=Y)
     s = "How To Play\n"
-    s += "A random code of 5 colours is generated. You have twelve tries to "
+    s += "A random code of 4 colours is generated. You have twelve tries to "
     s += "crack the code. Each turn, use the buttons to choose the colour "
     s += "combination you want to guess. For each colour in the right spot, "
     s += "you will receive a black peg (left side). For any other colour "
@@ -166,10 +167,10 @@ def set_kill(self=None):
 # Helper Method for Changing Colours
 def set_colour(colour):
     global colour_array
-    halloween = ['gray4', 'DarkOrange1', 'yellow', 'orange4', 'ghost white']
-    default = ['PaleVioletRed1', 'aquamarine2', 'peach puff', 'DarkOliveGreen2', 'SlateBlue2']
-    bluegreen = ['lime green', 'dodger blue', 'spring green', 'aquamarine', 'steel blue']
-    grey = ['gray90', 'gray60', 'gray30', 'gray20', 'gray5']
+    halloween = ['gray4', 'DarkOrange1', 'yellow', 'orange4', 'gainsboro', 'OrangeRed3']
+    default = ['PaleVioletRed1', 'aquamarine2', 'peach puff', 'DarkOliveGreen2', 'SlateBlue2', 'orange']
+    bluegreen = ['lime green', 'dodger blue', 'spring green', 'aquamarine', 'steel blue', 'dark green']
+    grey = ['gray90', 'gray75', 'gray44', 'gray30', 'gray20', 'gray5']
     themes = [default, grey, bluegreen, halloween]
     colour_array = themes[colour]
 
@@ -182,7 +183,10 @@ def set_diff(d):
 def generate_sequence():
     global colour_array
     global seq
+    set_colour(theme)
     if diff == 0:
+        colour_array = colour_array[:-2]
+    if diff == 1:
         colour_array = colour_array[:-1]
     for i in range(4):
         seq[i] = random.choice(colour_array)
@@ -215,12 +219,15 @@ def vic_pop(tries):
     pop.wm_title("Congratulations!")
     pop.protocol("WM_DELETE_WINDOW", set_destroy)
 
-    mv = " move!" if tries==1 else " moves"
+    mv = " move!" if tries==1 else " moves."
     s = "You cracked the code in " + str(tries) + mv
     tk.Label(pop, text=s).pack()
     tk.Button(pop, text="Play Again", padx = 10, command=set_destroy).pack()
     tk.Button(pop, text="Exit", padx = 10, command=set_kill).pack()
     pop.resizable(0, 0)
+
+    while(not destroy and not kill):
+        pop.update()
 
 # Popup for loss
 def loss_pop():
@@ -245,7 +252,7 @@ def play():
     # Set Up Colour Buttons #
     #########################
     mm = tk.Tk()
-    mm.title("Master Mind")
+    mm.title("MasterMind")
     mm.geometry("334x718")
     mm.resizable(0, 0)
     mm.protocol("WM_DELETE_WINDOW", set_kill)
@@ -276,7 +283,7 @@ def play():
     menu.add_command(label="About", command=about_menu)
     menu.add_separator()
     menu.add_command(label="Exit", command=set_kill, accelerator="Ctrl+Q")
-    menubar.add_cascade(label="Master Mind", menu=menu)
+    menubar.add_cascade(label="MasterMind", menu=menu)
     mm.config(menu=menubar)
     mm.bind_all("<Control-q>", set_kill)
     mm.bind_all("<Control-r>", set_destroy)
@@ -286,7 +293,7 @@ def play():
     ##########################
     generate_sequence()
     global diff
-    tries = 8 if diff==2 else 12
+    tries = 8 if diff==3 else 12
     while tries>0:
         global destroy
         destroy = False
@@ -306,6 +313,7 @@ def play():
             bw = check_pegs(colours)
             if bw[0] == 4:
                 vic_pop(13-tries)
+                break;
             pbw = PegBoard(mm, 'white', bw[1])
             pbb = PegBoard(mm, 'black', bw[0])
             pbw.grid(row=13-tries, column=5)
@@ -319,5 +327,5 @@ def play():
     if kill:
         mm.destroy()
         exit()
-
+#Consider adding a StopWatch
 play()
