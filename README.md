@@ -1,7 +1,7 @@
+# Mastermind
+
 ![Python](https://img.shields.io/badge/python-v3.7-blue)
 [![License](https://img.shields.io/github/license/zakwht/mastermind)](/LICENSE.md)
-
-# Mastermind
 
 __Mastermind__ is a simulation of the classic code-breaking board game, [Mastermind](https://en.wikipedia.org/wiki/Mastermind_(board_game)), programmed in Python.
 
